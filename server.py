@@ -2,6 +2,7 @@ from typing import *
 import requests
 import urllib
 import wrapped_redis
+import os
 
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
