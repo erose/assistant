@@ -38,12 +38,16 @@ def sms_reply():
             else:
                 response_content = f"{url} ?"
                 set_youtube_video_url(url)
-        elif current_state == WAITING_ON_YOUTUBE_CONFIRMATION_STATE:
-            video_url = get_youtube_video_url()
-            os.system(f"./download_single_or_multiple_videos.sh {video_url}")
         else:
+            # TODO
             raise ValueError
-       
+
+    elif current_state == WAITING_ON_YOUTUBE_CONFIRMATION_STATE:
+        video_url = get_youtube_video_url()
+        os.system(f"./download_single_or_multiple_videos.sh {video_url}")
+    else:
+        raise ValueError
+   
     response = MessagingResponse()
     response.message(response_content)
     return str(response)
