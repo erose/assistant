@@ -36,10 +36,11 @@ def sms_reply():
             if url is None:
                 response_content = "No results found."
             else:
-                response_content = f"{url} ?"
+                response_content = f"{url} ? (y/n)"
                 set_youtube_video_url(url)
                 set_state(WAITING_ON_YOUTUBE_CONFIRMATION_STATE)
         else:
+            set_state(INITIAL_STATE)
             # TODO
             raise ValueError
 
@@ -47,7 +48,12 @@ def sms_reply():
         if normalized_body == "y":
             video_url = get_youtube_video_url()
             os.system(f"./download_single_or_multiple_videos.sh {video_url}")
+        elif normalized_body == "n"::
+            set_state(INITIAL_STATE)
+            # TODO
+            raise ValueError
     else:
+        set_state(INITIAL_STATE)
         raise ValueError
    
     response = MessagingResponse()
