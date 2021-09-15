@@ -25,14 +25,22 @@ def sms_reply():
     body = request.values.get('Body', None)
     normalized_body = body.lower()
 
-    response_content = f"No command recognized. Commands start with any of {','.join(COMMAND_PREFIXES)}"
+    # Initialize the response content to an error message.
+    response_content = f"No command recognized. Commands start with any string in this list [{','.join(COMMAND_PREFIXES)}]"
+
+    current_state = get_state()
     if normalized_body.startswith(YOUTUBE_COMMAND_PREFIX):
-        search_string = normalized_body.removeprefix(YOUTUBE_COMMAND_PREFIX)
-        url = get_first_video_url(search_string)
-        if url is None:
-            response_content = ""
+        if current_state == INITIAL_STATE:
+            search_string = normalized_body.removeprefix(YOUTUBE_COMMAND_PREFIX)
+            url = get_first_video_url(search_string)
+            if url is None:
+                response_content = "No results found."
+            else:
+                response_content = f"{url} ?"
+        elif current_state == WAITING_ON_YOUTUBE_CONFIRMATION_STATE:
+            ...
         else:
-            response_content = f"{url} ?"
+            raise ValueError
        
     response = MessagingResponse()
     response.message(response_content)
@@ -40,6 +48,9 @@ def sms_reply():
 
 def get_state() -> str:
 	return wrapped_redis.get('current_state') or INITIAL_STATE # So it works the first time.
+
+def set_state(string) -> None:
+    wrapped_redis.set('current_state', string)
 
 def get_first_video_url(search_string) -> Optional[str]:
     response = requests.get(f"https://serpapi.com/search.json?engine=youtube&search_query={urllib.parse.quote_plus(search_string)}&api_key={SERP_API_KEY}")
