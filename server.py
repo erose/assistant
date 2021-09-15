@@ -48,6 +48,7 @@ def sms_reply():
         if normalized_body == "y":
             video_url = get_youtube_video_url()
             os.system(f"./download_single_or_multiple_videos.sh {video_url}")
+            response_content = f"Downloaded {video_url}."
         elif normalized_body == "n":
             set_state(INITIAL_STATE)
             # TODO
