@@ -38,13 +38,15 @@ def sms_reply():
             else:
                 response_content = f"{url} ?"
                 set_youtube_video_url(url)
+                set_state(WAITING_ON_YOUTUBE_CONFIRMATION_STATE)
         else:
             # TODO
             raise ValueError
 
     elif current_state == WAITING_ON_YOUTUBE_CONFIRMATION_STATE:
-        video_url = get_youtube_video_url()
-        os.system(f"./download_single_or_multiple_videos.sh {video_url}")
+        if normalized_body == "y":
+            video_url = get_youtube_video_url()
+            os.system(f"./download_single_or_multiple_videos.sh {video_url}")
     else:
         raise ValueError
    
